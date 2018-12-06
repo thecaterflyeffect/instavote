@@ -1,0 +1,47 @@
+version: "3"
+
+services:
+  vote:
+    image: 'voting_vote'
+    ports:
+      - "5000:80"
+    networks:
+      - front-tier
+      - back-tier
+
+  result:
+    image: 'voting_result'
+    volumes:
+      - result-data:/app
+    ports:
+      - "5001:80"
+    networks:
+      - front-tier
+      - back-tier
+
+  worker:
+    image: 'voting_worker'
+    networks:
+      - back-tier
+
+  redis:
+    image: 'redis:3.2-alpine'
+    ports: ["6379"]
+    networks:
+      - back-tier
+
+  db:
+    image: postgres:9.4
+    volumes:
+      - "db-data:/var/lib/postgresql/data"
+    networks:
+      - back-tier
+
+volumes:
+  db-data:
+  voting-data:
+  result-data:
+
+networks:
+  front-tier:
+  back-tier:
